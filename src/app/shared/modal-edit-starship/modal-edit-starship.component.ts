@@ -4,13 +4,15 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
-  Validators,
+  Validators
 } from '@angular/forms';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { Starship } from 'src/app/models/Starship';
 import { StarshipsService } from 'src/app/services/starships.service';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
+
 
 @Component({
   selector: 'app-modal-edit-starship',
@@ -20,11 +22,11 @@ import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 export class ModalEditStarshipComponent implements OnInit {
 
   modalRef!: BsModalRef;
-  starshipId!: number;
+  starshipId: number = 0;
   starship = {} as Starship;
   form!: FormGroup;
 
-   get f(): any {
+  get f(): any {
     return this.form.controls;
   }
 
@@ -32,10 +34,12 @@ export class ModalEditStarshipComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private starshipService: StarshipsService,
-    private modalService: BsModalService,
+    private config: DynamicDialogConfig,
     private toastr: ToastrService,
-    private spinner: NgxSpinnerService,
-  ) { }
+    private spinner: NgxSpinnerService
+  ) {
+    this.starshipId = this.config.data.starshipId;
+  }
 
   public carregarStarship(): void {
     if (this.starshipId !== null && this.starshipId !== 0) {
@@ -59,15 +63,15 @@ export class ModalEditStarshipComponent implements OnInit {
 
   ngOnInit(): void {
     this.carregarStarship();
-    this.validation();
+    this.createForm();
   }
 
 
-  public validation(): void {
+  public createForm(): void {
     this.form = this.fb.group({
-      id: [{ value: '', disabled: true }],
+      id: [{ value: this.starshipId, disabled: true }],
       name: ['',
-          [
+        [
           Validators.required,
           Validators.minLength(4),
           Validators.maxLength(40),
@@ -95,24 +99,16 @@ export class ModalEditStarshipComponent implements OnInit {
   saveStarship(): void {
     this.spinner.show();
     if (this.form.valid) {
-
       this.starship = { ...this.form.value };
       this.starshipService
-        .putStarship(this.starship)
+        .updateStarship(this.starship, this.starshipId)
         .subscribe(
-          () =>
-            this.toastr.success(`Starship: ${this.starship.name} atualizado com sucesso.`, 'Sucesso!'),
+          () => this.toastr.success(`Starship: ${this.starship.name} atualizado com sucesso.`, 'Sucesso!'),
           (error: any) => {
             this.toastr.error(`Starship: ${this.starship.name} não foi salvo`, 'Erro!');
             console.error(error);
           }
         ).add(() => this.spinner.hide());
-          window.location.reload();
     }
-  }
-
-  openModal(template: TemplateRef<any>): void {
-    this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
-  }
-
+  } 
 }

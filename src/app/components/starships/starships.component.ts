@@ -1,18 +1,18 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
-import { NgxSpinnerService } from 'ngx-spinner';
-import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
-import { ToastrService } from 'ngx-toastr';
-import { StarshipsService } from 'src/app/services/starships.service';
-import { Starship } from 'src/app/models/Starship';
-import { ModalEditStarshipComponent } from 'src/app/shared/modal-edit-starship/modal-edit-starship.component';
+import { Component, OnInit, TemplateRef } from "@angular/core";
+import { NgxSpinnerService } from "ngx-spinner";
+import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
+import { ToastrService } from "ngx-toastr";
+import { StarshipsService } from "src/app/services/starships.service";
+import { Starship } from "src/app/models/Starship";
+import { ModalEditStarshipComponent } from "src/app/shared/modal-edit-starship/modal-edit-starship.component";
+import { DialogService } from "primeng/dynamicdialog";
 
 @Component({
-  selector: 'app-starships',
-  templateUrl: './starships.component.html',
-  styleUrls: ['./starships.component.scss']
+  selector: "app-starships",
+  templateUrl: "./starships.component.html",
+  styleUrls: ["./starships.component.scss"],
 })
 export class StarshipsComponent implements OnInit {
-
   modalRef!: BsModalRef;
   public starshipId!: number;
   public starshipName!: string;
@@ -23,9 +23,9 @@ export class StarshipsComponent implements OnInit {
   public pagina = 1;
 
   public viewButton = true;
-  public nameButton = '';
+  public nameButton = "";
 
-  private listedFilter = '';
+  private listedFilter = "";
 
   public get filterList(): string {
     return this.listedFilter;
@@ -41,9 +41,10 @@ export class StarshipsComponent implements OnInit {
   constructor(
     private spinner: NgxSpinnerService,
     private starshipService: StarshipsService,
+    private dialogService: DialogService,
     private modalService: BsModalService,
     private toastr: ToastrService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.spinner.show();
@@ -54,29 +55,32 @@ export class StarshipsComponent implements OnInit {
   public filterStarships(filterBy: string): Starship[] {
     filterBy = filterBy.toLocaleLowerCase();
     return this.starships.filter(
-      (starships: { name: string}) =>
-      starships.name.toLocaleLowerCase().indexOf(filterBy) !== -1
+      (starships: { name: string }) =>
+        starships.name.toLocaleLowerCase().indexOf(filterBy) !== -1
     );
   }
 
   public GetAllStarship(): void {
-    this.starshipService.getStarship().subscribe(
-      (starships: any) => {
-        this.starships = starships;
-        this.starshipsFiltered = this.starships;
-        this.loading();
+    this.starshipService
+      .getStarship()
+      .subscribe(
+        (starships: any) => {
+          this.starships = starships;
+          this.starshipsFiltered = this.starships;
+          this.loading();
 
-        if (this.starships.length === 0) {
-          this.toastr.error('No registered starships.', 'Error!');
-        }else {
-          this.toastr.success('Data loaded.', 'Success!');
-      }
-      },
-      (error: any) => {
-          this.toastr.error('Error loading data.', 'Error!' );
+          if (this.starships.length === 0) {
+            this.toastr.error("No registered starships.", "Error!");
+          } else {
+            this.toastr.success("Data loaded.", "Success!");
+          }
+        },
+        (error: any) => {
+          this.toastr.error("Error loading data.", "Error!");
           console.error(error);
-      }
-    ).add(() => this.spinner.hide());
+        }
+      )
+      .add(() => this.spinner.hide());
   }
 
   // mudarPagina(): void {
@@ -94,43 +98,53 @@ export class StarshipsComponent implements OnInit {
 
   public loading(): void {
     if (this.viewButton) {
-      var viewMore = this.starshipsFiltered.slice(0,6);
+      var viewMore = this.starshipsFiltered.slice(0, 6);
       this.starshipsFiltered = viewMore;
-      this.nameButton = 'View More';
-    }else {
+      this.nameButton = "View More";
+    } else {
       if (this.starships.length > 6) {
-      this.starshipsFiltered = this.starships;
-      this.nameButton = 'View Less';
-    }else{
-      this.toastr.error(`There are only: ${this.starshipsFiltered.length} registered starships.`, `Error!`);
-    }
+        this.starshipsFiltered = this.starships;
+        this.nameButton = "View Less";
+      } else {
+        this.toastr.error(
+          `There are only: ${this.starshipsFiltered.length} registered starships.`,
+          `Error!`
+        );
+      }
     }
   }
 
   public GetAllStarshipPage(): void {
-    this.starshipService.getStarshipPage(this.pagina).subscribe(
-      (starships: any) => {
-        this.starships = starships;
-        this.starshipsFiltered = this.starships;
-        this.toastr.success('Data loaded.', 'Success!');
-      },
-      (error: any) => {
-        this.toastr.error('Error loading data.', 'Error!' );
-        console.error(error);
-      }
-    ).add(() => this.spinner.hide());
+    this.starshipService
+      .getStarshipPage(this.pagina)
+      .subscribe(
+        (starships: any) => {
+          this.starships = starships;
+          this.starshipsFiltered = this.starships;
+          this.toastr.success("Data loaded.", "Success!");
+        },
+        (error: any) => {
+          this.toastr.error("Error loading data.", "Error!");
+          console.error(error);
+        }
+      )
+      .add(() => this.spinner.hide());
   }
 
   openModalAddStarship(template: TemplateRef<any>): void {
-    this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
+    this.modalRef = this.modalService.show(template, { class: "modal-sm" });
   }
 
-  openModalDelete(event: any, template: TemplateRef<any>, starshipId: number, starshipName: string): void {
-    console.log(template);
+  openModalDelete(
+    event: any,
+    template: TemplateRef<any>,
+    starshipId: number,
+    starshipName: string
+  ): void {   
     event.stopPropagation();
     this.starshipId = starshipId;
     this.starshipName = starshipName;
-    this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
+    this.modalRef = this.modalService.show(template, { class: "modal-sm" });
   }
 
   confirmAddStarship(): void {
@@ -148,47 +162,39 @@ export class StarshipsComponent implements OnInit {
   confirmDeleteStarship(): void {
     this.modalRef.hide();
     this.spinner.show();
-    this.starshipService.deleteStarshipById(this.starshipId).subscribe(
-      () => {
-        var nameStarship = '';
-        this.starships.forEach(x => {
-          nameStarship = x.name;
-        });
+    this.starshipService
+      .deleteStarshipById(this.starshipId)
+      .subscribe(
+        () => {
+          var nameStarship = "";
+          this.starships.forEach((x) => {
+            nameStarship = x.name;
+          });
 
-          this.toastr.success(`The Starship ${nameStarship} was successfully deleted.`, 'Success!');
+          this.toastr.success(
+            `The Starship ${nameStarship} was successfully deleted.`,
+            "Success!"
+          );
           window.location.reload();
-      },
-      (error: any) => {
-        this.toastr.error(`Error when trying to delete Starship ${this.starshipName}.`, 'Error!');
-        console.error(error);
-      }
-    ).add(() => this.spinner.hide());
-
+        },
+        (error: any) => {
+          this.toastr.error(
+            `Error when trying to delete Starship ${this.starshipName}.`,
+            "Error!"
+          );
+          console.error(error);
+        }
+      )
+      .add(() => this.spinner.hide());
   }
 
-  openModalEdit(event: any, template: TemplateRef<any>, starshipId: number): void {
-    console.log(template);
+  detalheEditStarship(event: any, starshipId: number): void {
     event.stopPropagation();
-    this.starshipId = starshipId;
-    this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
-  }
-
-  detalheEditStarship(): void {
-    var starshipId: number;
-    starshipId = this.starshipId;
-      let initialState = {
-        starshipId
+    this.dialogService.open(ModalEditStarshipComponent, {
+      header: `Edit Starship`,     
+      data: {
+        starshipId: starshipId
       }
-      this.modalRef = this.modalService.show(ModalEditStarshipComponent, {class: 'modal-dialog-centered', initialState});
-    }
-
-    confirmEditStarship(): void {
-      this.modalRef.hide();
-      this.toastr.success('You will be redirected.', 'Hold!');
-    }
-
-    declineEditStarship(): void {
-      this.modalRef.hide();
-    }
-
+    });
+  }
 }

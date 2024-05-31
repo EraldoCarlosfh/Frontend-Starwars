@@ -15,6 +15,7 @@ import { NavComponent } from './shared/nav/nav.component';
 import { FooterComponent } from './shared/footer/footer.component';
 import { PeopleService } from './services/people.service';
 import { StarshipsService } from './services/starships.service';
+import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 
 @NgModule({
   declarations: [
@@ -35,14 +36,14 @@ import { StarshipsService } from './services/starships.service';
       progressBar: true
     }),
     AppRoutingModule,
-    HttpClientModule,
+    HttpClientModule,  
     ModalModule.forRoot(),
     BsDropdownModule.forRoot(),
     TooltipModule.forRoot(),
     BrowserAnimationsModule,
     NgxSpinnerModule
   ],
-  providers: [PeopleService, StarshipsService],
+  providers: [PeopleService, StarshipsService, DynamicDialogConfig, DialogService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

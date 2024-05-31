@@ -10,54 +10,45 @@ import { Injectable } from "@angular/core";
 })
 
 export class PeopleService {
-
-  public endpoint = 'pilots';
-   public endpoint2 = 'pilot/';
-
+ 
   constructor(
     private http: HttpClient
   ) { }
 
   public getAllPilot(): Observable<People[]> {
     return this.http
-      .get<People[]>(environment.api + this.endpoint)
+      .get<People[]>(`${environment.api}/pilots`)
       .pipe(take(1));
   }
 
   public getPilotPage(page: number): Observable<People[]> {
     return this.http
-      .get<People[]>(`${environment.api + this.endpoint}?page=${page}`)
+      .get<People[]>(`${environment.api}/pilots/?page=${page}`)
       .pipe(take(1));
   }
 
   public getPilotById(id: number,): Observable<People> {
     return this.http
-      .get<People>(`${environment.api + this.endpoint2}${id}`)
+      .get<People>(`${environment.api}/pilots/${id}`)
       .pipe(take(1));
   }
 
    public postPilot(pilot: People): Observable<People> {
     return this.http
-      .post<People>(environment.api + 'save/' + this.endpoint2, pilot)
+      .post<People>(`${environment.api}/save/pilots`, pilot)
       .pipe(take(1));
   }
 
-  public putPilot(pilot: People): Observable<People> {
+  public updatePilot(pilot: People, id: number): Observable<People> {   
     return this.http
-      .put<People>(environment.api + 'update/' + this.endpoint2, pilot)
-      .pipe(take(1));
-  }
-
-  public deletePilot(pilot: People): Observable<any> {
-    return this.http
-      .delete<People>(environment.api + 'delete/' + this.endpoint2 + pilot)
+      .put<People>(`${environment.api}/update/pilots/${id}`, pilot)
       .pipe(take(1));
   }
 
   public deletePilotById(id: number): Observable<People> {
     return this.http
-      .delete<People>(`${environment.api + 'delete/' + this.endpoint2}${id}`)
+      .delete<People>(`${environment.api}/delete/pilots/${id}`)
       .pipe(take(1));
   }
 
-  }
+}

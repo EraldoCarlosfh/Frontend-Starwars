@@ -3,6 +3,7 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { People } from 'src/app/models/People';
 import { PeopleService } from 'src/app/services/people.service';
 
@@ -26,9 +27,12 @@ export class ModalEditComponent implements OnInit {
     private fb: FormBuilder,
     private peopleService: PeopleService,
     private modalService: BsModalService,
+    private config: DynamicDialogConfig,
     private toastr: ToastrService,
     private spinner: NgxSpinnerService,
-  ) {}
+  ) {
+    this.peopleId = this.config.data.peopleId;
+  }
 
   public carregarPilot(): void {
     if (this.peopleId !== null && this.peopleId !== 0) {
@@ -57,7 +61,7 @@ export class ModalEditComponent implements OnInit {
 
   public createForm(): void {
     this.form = this.fb.group({
-      id: [{ value: '', disabled: true }],
+      id: [{ value: this.peopleId, disabled: true }],
       name: [
         '',
         [
@@ -90,10 +94,9 @@ export class ModalEditComponent implements OnInit {
   savePilot(): void {
     this.spinner.show();
     if (this.form.valid) {
-
       this.pilot = { ...this.form.value };
       this.peopleService
-        .putPilot(this.pilot)
+        .updatePilot(this.pilot, this.peopleId)
         .subscribe(
           () =>
             this.toastr.success(`Piloto: ${this.pilot.name} atualizado com sucesso.`, 'Sucesso!'),
@@ -102,7 +105,6 @@ export class ModalEditComponent implements OnInit {
             console.error(error);
           }
         ).add(() => this.spinner.hide());
-      window.location.reload();
     }
   }
 

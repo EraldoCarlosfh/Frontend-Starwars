@@ -28,7 +28,7 @@
           <small class="">{{star.name}}
           </small>
           <div class="d-flex align-items-center"><i class="fa fa-trash" tooltip="Delete" (click)="openModalDelete($event, templateDelete, star.id, star.name)"></i>
-            &nbsp;&nbsp;<i class="{{'fa fa-edit'}}" tooltip="Edit" (click)="openModalEdit($event, templateEdit, star.id)"></i></div>
+            &nbsp;&nbsp;<i class="{{'fa fa-edit'}}" tooltip="Edit" (click)="detalheEditStarship($event, star.id)"></i></div>
         </div>
       </div>
     </div>
@@ -53,11 +53,4 @@
   </div>
 </ng-template>
 
-<ng-template #templateEdit>
-  <div class="modal-body text-center">
-    <p>You want to edit the code Starship: {{this.starshipId}}?</p>
-    <button type="button" class="btn btn-default" (click)="detalheEditStarship()" (click)="confirmEditStarship()">Yes</button>
-    <button type="button" class="btn btn-primary" (click)="declineEditStarship()">No</button>
-  </div>
-</ng-template>
 
